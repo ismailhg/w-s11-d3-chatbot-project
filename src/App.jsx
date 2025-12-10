@@ -1,14 +1,26 @@
-import { useState } from 'react';
-
-import './App.css';
-import { Chatbot } from './components/Chatbot';
-import User from './components/User';
+import { useState } from "react";
+import "./App.css";
+import { Chatbot } from "./components/Chatbot";
+import User from "./components/User";
+import { useGemini } from "./hooks/useGemini";
 
 function App() {
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const { askGemini, loading } = useGemini();
 
-  function handleChat(event) {
+  async function handleChat(event) {
     event.preventDefault();
+
+    const userMessage = { sender: "user", text: userInput };
+    setMessages((prev) => [...prev, userMessage]);
+
+    setUserInput("");
+
+    const aiResponse = await askGemini(userInput);
+
+    const botMessage = { sender: "bot", text: aiResponse };
+    setMessages((prev) => [...prev, botMessage]);
   }
 
   function handleChange(event) {
@@ -28,13 +40,18 @@ function App() {
         {/* Chat container */}
         <div
           className="pr-4 h-[474px]"
-          style={{ minWidth: '100%', display: 'table' }}
+          style={{ minWidth: "100%", display: "table" }}
         >
           <div className="max-h-[454px] overflow-auto">
-            {/* User Chat Message */}
-            <User text="fewafef" />
-            {/* Ai Chat Message */}
-            <Chatbot text="Sorry, I couldn't find any information in the documentation about that. Expect answer to be less accurateI could not find the answer to this in the verified sources." />
+            {messages.map((msg, i) =>
+              msg.sender === "user" ? (
+                <User key={i} text={msg.text} />
+              ) : (
+                <Chatbot key={i} text={msg.text} />
+              )
+            )}
+
+            {loading && <Chatbot text="Thinking..." />}
           </div>
         </div>
         {/*input box */}

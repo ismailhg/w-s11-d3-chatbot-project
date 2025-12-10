@@ -1,3 +1,5 @@
+import ReactMarkdown from "react-markdown";
+
 export function Chatbot({ text }) {
   return (
     <div className="flex gap-3 my-4 text-gray-600 text-sm flex-1">
@@ -23,10 +25,10 @@ export function Chatbot({ text }) {
           </svg>
         </div>
       </span>
-      <p className="leading-relaxed">
-        <span className="block font-bold text-gray-700">AI </span>
-        {text}
-      </p>
+      <div className="leading-relaxed">
+        <span className="block font-bold text-gray-700">AI</span>
+        <ReactMarkdown>{text}</ReactMarkdown>
+      </div>
     </div>
   );
 }
